@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>عالم فن كيدز – منصة الألعاب التعليمية والحركية التفاعلية للأطفال (16 لعبة)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/games.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body class="selection:bg-amber-300 selection:text-slate-900">
+
+  <!-- خلفية السماء والغيوم المتحركة -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <svg class="absolute top-8 left-4 w-28 sm:w-44 opacity-70 animate-cloud" viewBox="0 0 200 100" fill="white">
+      <circle cx="60" cy="60" r="30"/><circle cx="100" cy="45" r="40"/><circle cx="145" cy="60" r="28"/><rect x="55" y="55" width="95" height="35" rx="15"/>
+    </svg>
+    <svg class="absolute top-24 right-6 w-32 sm:w-52 opacity-60 animate-cloud" style="animation-delay: -7s;" viewBox="0 0 200 100" fill="white">
+      <circle cx="60" cy="60" r="30"/><circle cx="100" cy="45" r="40"/><circle cx="145" cy="60" r="28"/><rect x="55" y="55" width="95" height="35" rx="15"/>
+    </svg>
+    <div class="absolute top-14 left-1/3 text-2xl sm:text-3xl animate-twinkle">✨</div>
+    <div class="absolute top-40 right-1/4 text-xl sm:text-2xl animate-twinkle" style="animation-delay: 1.1s;">⭐</div>
+  </div>
+
+  <!-- طبقة الاحتفالات -->
+  <div id="confetti-layer" class="fixed inset-0 pointer-events-none z-50"></div>
+
+  <!-- إشعار الاحتفال والفوز -->
+  <div id="celebration-toast" class="hidden fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 sm:w-[400px] z-50 bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 p-3.5 rounded-3xl border-4 border-white shadow-2xl items-center gap-3">
+    <div class="text-3xl bg-white p-2 rounded-2xl shadow shrink-0">🏆</div>
+    <div class="flex-1 min-w-0">
+      <h4 id="celebration-title" class="font-black text-slate-900 text-sm sm:text-base truncate">إنجاز رائع!</h4>
+      <p id="celebration-details" class="font-extrabold text-slate-800 text-xs mt-0.5">+30 نقطة 🌟</p>
+    </div>
+  </div>
+
+  <!-- الهيدر وشريط التنقل المتجاوب مع الجوال -->
+  <header class="relative z-20 max-w-7xl mx-auto px-3 sm:px-4 pt-3 pb-2">
+    <div class="card-3d p-3 sm:p-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <button type="button" onclick="window.FunKidsMain.navigate('home')" class="flex items-center gap-2.5 text-right group">
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-rose-500 via-amber-400 to-sky-500 p-1 shadow-md border-2 border-white flex items-center justify-center text-2xl shrink-0">
+            🎡
+          </div>
+          <div>
+            <div class="text-lg sm:text-2xl font-black tracking-tight text-slate-900 flex flex-wrap items-center gap-1.5">
+              <span>عالم فن كيدز</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-300 text-slate-900 font-black">16 لعبة حركية وتفاعلية</span>
+            </div>
+            <p class="text-[11px] sm:text-xs font-bold text-slate-500">6 ألعاب مشتركة • 5 ألعاب أولاد • 5 ألعاب بنات (5–15 سنة)</p>
+          </div>
+        </button>
+
+        <!-- عداد النقاط والنجوم والمستوى المتجاوب -->
+        <div class="flex items-center gap-1.5 sm:gap-2 bg-sky-50 px-2.5 py-1.5 rounded-2xl border-2 border-sky-200 w-full sm:w-auto justify-around sm:justify-start">
+          <div class="text-center px-2 border-l border-sky-200">
+            <div class="text-[10px] font-bold text-slate-500">النقاط</div>
+            <div class="text-xs sm:text-sm font-black text-rose-600"><span class="ui-points">150</span> 💎</div>
+          </div>
+          <div class="text-center px-2 border-l border-sky-200">
+            <div class="text-[10px] font-bold text-slate-500">النجوم</div>
+            <div class="text-xs sm:text-sm font-black text-amber-500"><span class="ui-stars">15</span> ⭐</div>
+          </div>
+          <div class="text-center px-2 border-l border-sky-200">
+            <div class="text-[10px] font-bold text-slate-500">المستوى</div>
+            <div class="text-xs sm:text-sm font-black text-emerald-600">مستوى <span class="ui-level">2</span></div>
+          </div>
+          <button id="quick-sound-toggle" type="button" onclick="window.FunKidsMain.toggleQuickSound()"
+            class="px-2.5 py-1 rounded-xl bg-amber-300 text-slate-900 font-black text-[11px] shrink-0">
+            🔊 الصوت: مفعل
+          </button>
+        </div>
+      </div>
+
+      <!-- شبكة أزرار التنقل: مرتبة للجوال والكمبيوتر -->
+      <nav class="grid grid-cols-4 sm:flex sm:flex-wrap items-center justify-center gap-1.5 pt-1 border-t border-slate-100">
+        <button type="button" data-page="home" onclick="window.FunKidsMain.navigate('home')" class="nav-btn btn-3d btn-primary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5 ring-4 ring-amber-300">🏠 الرئيسية</button>
+        <button type="button" data-page="library" onclick="window.FunKidsMain.navigate('library')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5">🎮 الألعاب (16)</button>
+        <button type="button" data-page="categories" onclick="window.FunKidsMain.navigate('categories')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5">👶 الأعمار</button>
+        <button type="button" data-page="achievements" onclick="window.FunKidsMain.navigate('achievements')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5">🏅 الإنجازات</button>
+        <button type="button" data-page="progress" onclick="window.FunKidsMain.navigate('progress')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5">📊 التقدم</button>
+        <button type="button" data-page="settings" onclick="window.FunKidsMain.navigate('settings')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5">⚙️ الإعدادات</button>
+        <button type="button" data-page="about" onclick="window.FunKidsMain.navigate('about')" class="nav-btn btn-3d btn-secondary text-[11px] sm:text-xs py-2 px-2 sm:px-3.5 col-span-2 sm:col-span-1">ℹ️ من نحن</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- شريط الشخصية الكرتونية التفاعلية (ماكس الثعلب المستكشف) -->
+  <section class="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 mt-2">
+    <div class="card-3d p-3.5 sm:p-4 bg-gradient-to-r from-white via-amber-50/90 to-sky-50/90 flex flex-col md:flex-row items-center gap-3.5">
+      <div class="flex items-center gap-3 w-full md:w-auto justify-center">
+        <div class="relative shrink-0 max-avatar-wrap animate-max-happy">
+          <img src="assets/characters/max-avatar.jpg" alt="المرشد الكرتوني ماكس"
+            class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-amber-400 shadow-lg" />
+          <span class="max-mood-badge absolute -bottom-2 right-0 px-2 py-0.5 rounded-full bg-amber-400 text-slate-900 font-black text-[10px] border-2 border-white shadow whitespace-nowrap">
+            🦊✨ سعيد ومتحمس
+          </span>
+        </div>
+        <div class="md:hidden flex flex-col gap-1">
+          <span class="font-black text-slate-900 text-sm">المرشد الكرتوني التفاعلي ماكس</span>
+          <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">
+            الفئة: <strong class="ui-age-zone">واحة الناشئين (8-11 سنة)</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="flex-1 text-center md:text-right space-y-1.5 w-full">
+        <div class="hidden md:flex flex-wrap items-center justify-start gap-2">
+          <span class="font-black text-slate-900 text-base">المرشد الكرتوني التفاعلي ماكس:</span>
+          <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">
+            الفئة النشطة: <strong class="ui-age-zone">واحة الناشئين (8-11 سنة)</strong>
+          </span>
+        </div>
+        <div class="bg-white/95 p-3 rounded-2xl border-2 border-amber-300 shadow-inner">
+          <p class="max-speech-text font-extrabold text-slate-800 text-xs sm:text-sm md:text-base leading-relaxed">
+            أهلاً وسهلاً بك في عالم فن كيدز المطور! استمتع الآن بـ 16 لعبة حركية وتفاعلية واقعية: 6 ألعاب تعليمية مشتركة، و5 ألعاب حماسية للأولاد، و5 ألعاب إبداعية للبنات!
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:flex md:flex-col gap-2 w-full md:w-auto shrink-0">
+        <button type="button" onclick="window.MaxCompanion.greetPlayer()" class="btn-3d btn-accent text-xs py-2 px-3">
+          🗣️ تحدث مع ماكس
+        </button>
+        <button type="button" onclick="window.MaxCompanion.nextTip()" class="btn-3d btn-secondary text-xs py-2 px-3">
+          💡 نصيحة جديدة
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- حاوية المحتوى الرئيسي -->
+  <main class="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 py-4 space-y-6 sm:space-y-8">
+
+    <!-- ====================================================================
+         الصفحة 1: الصفحة الرئيسية (تعرض الأقسام الثلاثة: 6 مشتركة + 5 أولاد + 5 بنات)
+         ==================================================================== -->
+    <section id="page-home" class="page-section space-y-6 sm:space-y-8">
+      <!-- البانر الترحيبي الرئيسي -->
+      <div class="card-3d overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-center bg-gradient-to-br from-indigo-900 via-sky-800 to-emerald-800 text-white">
+        <div class="lg:col-span-7 p-5 sm:p-8 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-900 font-black text-xs shadow">
+            <span>🌟 عالم افتراضي تفاعلي وحركي متكامل (16 لعبة حقيقية)</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl md:text-5xl font-black leading-tight">
+            مرحباً بك في <span class="text-amber-300">عالم فن كيدز!</span>
+          </h1>
+          <p class="text-sm sm:text-base md:text-lg font-bold text-sky-100 leading-relaxed">
+            استكشف 4 جزر خيالية طائرة، وتفاعل مع صديقك الكرتوني <strong class="text-amber-300">ماكس</strong> في <strong>16 لعبة واقعية وحركية</strong> مقسمة إلى: <strong class="text-emerald-300">6 ألعاب تعليمية مشتركة</strong>، و<strong class="text-sky-300">5 ألعاب مغامرات ورياضة للأولاد</strong>، و<strong class="text-pink-300">5 ألعاب إبداع وتألق للبنات</strong>!
+          </p>
+
+          <!-- شريط تقدم مستوى الطفل -->
+          <div class="bg-white/15 backdrop-blur-md p-3.5 rounded-2xl border border-white/25 space-y-2">
+            <div class="flex items-center justify-between text-xs font-black">
+              <span>👤 اللاعب: <span class="ui-player-name text-amber-300">المستكشف البطل</span></span>
+              <span class="ui-progress-label text-emerald-300">50% نحو المستوى 3</span>
+            </div>
+            <div class="w-full h-3.5 bg-slate-900/60 rounded-full overflow-hidden p-0.5 border border-white/30">
+              <div class="ui-progress-bar h-full bg-gradient-to-r from-amber-300 via-emerald-400 to-sky-400 rounded-full transition-all duration-500" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-3 pt-1">
+            <button type="button" onclick="window.FunKidsMain.openGame('math')" class="btn-3d btn-accent text-base sm:text-lg py-3 px-6 w-full sm:w-auto">
+              🚀 ابدأ اللعب الآن
+            </button>
+            <button type="button" onclick="window.FunKidsMain.openIsland('all')" class="btn-3d btn-secondary text-sm sm:text-base py-3 px-5 w-full sm:w-auto">
+              🎮 تصفح كل الألعاب (16 لعبة)
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 p-4 sm:p-6">
+          <div class="relative rounded-3xl overflow-hidden border-4 border-white shadow-2xl animate-float">
+            <img src="assets/images/world-islands.jpg" alt="خريطة جزر عالم فن كيدز" class="w-full h-52 sm:h-72 object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-transparent flex items-end p-4">
+              <div class="text-white">
+                <span class="text-xs font-black bg-rose-500 px-2.5 py-0.5 rounded-full">خريطة العالم الافتراضي</span>
+                <h2 class="text-base sm:text-lg font-black mt-1">4 جزر تعليمية + 16 لعبة حركية وتفاعلية!</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- شريط اختيار الفئة العمرية السريع -->
+      <div class="card-3d p-4 sm:p-5 bg-white/95">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3.5">
+          <div class="text-center md:text-right">
+            <h2 class="text-lg sm:text-xl font-black text-slate-800">🎂 تقسيم الألعاب حسب الفئة العمرية</h2>
+            <p class="text-xs font-bold text-slate-600">تتكيف سرعة الألعاب وصعوبة التحديات تلقائياً حسب عمر الطفل:</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full md:w-auto">
+            <button type="button" onclick="window.FunKidsMain.selectAgeZone('kids')" class="btn-3d btn-primary text-xs sm:text-sm py-2.5 px-4">
+              🐣 واحة الصغار (5–7)
+            </button>
+            <button type="button" onclick="window.FunKidsMain.selectAgeZone('junior')" class="btn-3d btn-secondary text-xs sm:text-sm py-2.5 px-4">
+              🦊 واحة الناشئين (8–11)
+            </button>
+            <button type="button" onclick="window.FunKidsMain.selectAgeZone('teen')" class="btn-3d btn-purple text-xs sm:text-sm py-2.5 px-4">
+              🚀 واحة اليافعين (12–15)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           القسم الأول: 5 ألعاب حركية وواقعية خاصة للأولاد
+           ================================================================== -->
+      <div class="card-3d p-5 sm:p-6 bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 border-4 border-sky-300 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl sm:text-4xl bg-sky-600 text-white p-2.5 rounded-2xl shadow shrink-0">👦</span>
+            <div>
+              <span class="px-3 py-0.5 rounded-full bg-sky-600 text-white text-xs font-black">5 ألعاب حركية وواقعية للأولاد</span>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">ركن مغامرات وبطولات الأولاد (5 ألعاب كاملة)</h2>
+            </div>
+          </div>
+          <button type="button" onclick="window.FunKidsMain.openIsland('boys')" class="btn-3d btn-secondary text-xs py-2 px-4">عرض قسم الأولاد ⬅️</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+          <!-- لعبة ولادي 1 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-sky-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🏎️</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">سباق حركي</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">1. سباق الأبطال التوربيني</h3>
+              <p class="text-xs font-bold text-slate-600">حلبة أسفلت متحركة وتبديل مسارات ولهب نيترو ناري مع عداد سرعة!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('racer')" class="btn-3d btn-secondary w-full text-xs py-2">🎮 العب السباق</button>
+          </div>
+
+          <!-- لعبة ولادي 2 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-indigo-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🤖</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">ليزر ودروع</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">2. مختبر الروبوتات والمدافع</h3>
+              <p class="text-xs font-bold text-slate-600">ركّب دروع التيتانيوم وأطلق شعاع الليزر لتدمير النيازك الفضائية!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('robo')" class="btn-3d btn-purple w-full text-xs py-2">🎮 العب الروبوتات</button>
+          </div>
+
+          <!-- لعبة ولادي 3 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-emerald-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">⚽</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">رياضة حية</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">3. بطولة نجوم كرة القدم</h3>
+              <p class="text-xs font-bold text-slate-600">راقب حارس المرمى المتحرك وسدد الكرة في الزوايا الخمس لتسجيل الأهداف!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('soccer')" class="btn-3d btn-success w-full text-xs py-2">🎮 العب كرة القدم</button>
+          </div>
+
+          <!-- لعبة ولادي 4 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-amber-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🦖</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">تنقيب وحفر</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">4. منقب الديناصورات والكنوز</h3>
+              <p class="text-xs font-bold text-slate-600">اكسر الصخور بالمعول والفرشاة لاستخراج عظام التي ريكس والكنوز!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('dino')" class="btn-3d btn-accent w-full text-xs py-2">🎮 العب التنقيب</button>
+          </div>
+
+          <!-- لعبة ولادي 5 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-cyan-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🏹</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800">تصويب سهام</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">5. تحدي السهام والرامي</h3>
+              <p class="text-xs font-bold text-slate-600">صوّب السهم نحو الأهداف المتحركة مع حساب اتجاه الرياح بدقة!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('archery')" class="btn-3d btn-secondary w-full text-xs py-2">🎮 العب الرماية</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           القسم الثاني: 5 ألعاب إبداعية وتفاعلية خاصة للبنات
+           ================================================================== -->
+      <div class="card-3d p-5 sm:p-6 bg-gradient-to-br from-pink-50 via-rose-50 to-fuchsia-100 border-4 border-pink-300 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl sm:text-4xl bg-pink-500 text-white p-2.5 rounded-2xl shadow shrink-0">👧</span>
+            <div>
+              <span class="px-3 py-0.5 rounded-full bg-pink-500 text-white text-xs font-black">5 ألعاب تفاعلية وواقعية للبنات</span>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5">ركن إبداع وتألق البنات (5 ألعاب كاملة)</h2>
+            </div>
+          </div>
+          <button type="button" onclick="window.FunKidsMain.openIsland('girls')" class="btn-3d btn-primary text-xs py-2 px-4">عرض قسم البنات ⬅️</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+          <!-- لعبة بناتي 1 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-pink-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">👗</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-pink-100 text-pink-800">تصميم أزياء</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">1. بوتيك الأزياء والأميرات</h3>
+              <p class="text-xs font-bold text-slate-600">نسّقي الفساتين والتيجان والحقائب والأحذية واعرضيها على المسرح!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('fashion')" class="btn-3d btn-primary w-full text-xs py-2">🎮 العبي الأزياء</button>
+          </div>
+
+          <!-- لعبة بناتي 2 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-rose-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🧁</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">مخبز وحلويات</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">2. شيف الحلويات والمخبز</h3>
+              <p class="text-xs font-bold text-slate-600">ركّبي طبقات الكيك والكريمة والزينة اللذيذة لتلبية طلبات الزبائن!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('bakery')" class="btn-3d btn-accent w-full text-xs py-2">🎮 العبي المخبز</button>
+          </div>
+
+          <!-- لعبة بناتي 3 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-fuchsia-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">💎</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-800">ألماس ولؤلؤ</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">3. استوديو المجوهرات الملكية</h3>
+              <p class="text-xs font-bold text-slate-600">انظمي حبات الألماس واللؤلؤ والياقوت في عقود وتيجان متناظرة!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('jewelry')" class="btn-3d btn-purple w-full text-xs py-2">🎮 العبي المجوهرات</button>
+          </div>
+
+          <!-- لعبة بناتي 4 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-teal-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🐱</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">رعاية أليفة</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">4. عيادة وصالون الأليفة</h3>
+              <p class="text-xs font-bold text-slate-600">حمّمي القطة والأرنب والجرو بالفقاعات وقدمي لها الرعاية الطبية والغذاء!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('petcare')" class="btn-3d btn-success w-full text-xs py-2">🎮 العبي رعاية الأليفة</button>
+          </div>
+
+          <!-- لعبة بناتي 5 -->
+          <div class="bg-white p-4 rounded-2xl border-2 border-emerald-200 flex flex-col justify-between space-y-3 shadow-sm hover:-translate-y-1 transition">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-3xl">🌸</span>
+                <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">زراعة وفراشات</span>
+              </div>
+              <h3 class="font-black text-sm sm:text-base text-slate-900">5. حديقة الفراشات والزهور</h3>
+              <p class="text-xs font-bold text-slate-600">ازرعي بذور الورد والتوليب واسقيها لتتفتح وتجذب الفراشات الملونة!</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('garden')" class="btn-3d btn-primary w-full text-xs py-2">🎮 العبي الحديقة</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================
+           القسم الثالث: 6 ألعاب تعليمية مشتركة للجميع
+           ================================================================== -->
+      <div class="space-y-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="px-3 py-0.5 rounded-full bg-amber-300 text-slate-900 text-xs font-black">6 ألعاب تعليمية مشتركة للجميع 🌟</span>
+            <h2 class="text-xl sm:text-3xl font-black text-slate-900 mt-1">🕹️ الألعاب التعليمية المشتركة (6 ألعاب أساسية)</h2>
+          </div>
+          <button type="button" onclick="window.FunKidsMain.openIsland('shared')" class="btn-3d btn-secondary text-xs py-2 px-4">
+            عرض الألعاب المشتركة 📚
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🧮</span>
+                <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-800 font-black text-xs">مشتركة • جزيرة الأرقام</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">1. مغامرة الأرقام والحساب</h3>
+              <p class="text-xs font-bold text-slate-600">تحديات حسابية متدرجة الصعوبة مع رسائل تشجيعية ونقاط مضاعفة عند الإجابات المتتالية.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('math')" class="btn-3d btn-primary w-full text-sm py-2.5">🎮 العب مغامرة الأرقام</button>
+          </div>
+
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🧠</span>
+                <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-black text-xs">مشتركة • جزيرة الذكاء</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">2. تحدي الذاكرة الذكية</h3>
+              <p class="text-xs font-bold text-slate-600">اقلب البطاقات الكرتونية ثلاثية الأبعاد واعثر على الأزواج المتطابقة بأقل محاولات.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('memory')" class="btn-3d btn-purple w-full text-sm py-2.5">🎮 العب تحدي الذاكرة</button>
+          </div>
+
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🦁</span>
+                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-black text-xs">مشتركة • جزيرة المعرفة</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">3. خمّن الحيوان وصوته</h3>
+              <p class="text-xs font-bold text-slate-600">استمع إلى أصوات الحيوانات وتعرف على أوصافها ومعلوماتها العلمية الشيقة.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('animals')" class="btn-3d btn-success w-full text-sm py-2.5">🎮 العب خمّن الحيوان</button>
+          </div>
+
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🧩</span>
+                <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-black text-xs">مشتركة • جزيرة الذكاء</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">4. مغامرة تركيب الصور (البازل)</h3>
+              <p class="text-xs font-bold text-slate-600">اسحب قطع الصورة المقسمة وأفلتها في مكانها الصحيح لإكمال اللوحة والفوز بالمكافأة.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('puzzle')" class="btn-3d btn-accent w-full text-sm py-2.5">🎮 العب مغامرة البازل</button>
+          </div>
+
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🎨</span>
+                <span class="px-3 py-1 rounded-full bg-pink-100 text-pink-800 font-black text-xs">مشتركة • جزيرة الإبداع</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">5. المرسم الإبداعي الحر</h3>
+              <p class="text-xs font-bold text-slate-600">لوحة رسم تفاعلية بالألوان والأحجام والملصقات وتلوين الشخصيات مع حفظ الرسومات محلياً.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('drawing')" class="btn-3d btn-primary w-full text-sm py-2.5">🎮 العب المرسم الإبداعي</button>
+          </div>
+
+          <div class="card-3d card-3d-interactive p-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-4xl">🚀</span>
+                <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 font-black text-xs">مشتركة • جزيرة المعرفة</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-black text-slate-800">6. مغامرة الفضاء والكواكب</h3>
+              <p class="text-xs font-bold text-slate-600">عالم فضائي قابل للاستكشاف مع أسئلة علمية عن الكواكب وفتح كواكب جديدة بعد كل تحدٍ.</p>
+            </div>
+            <button type="button" onclick="window.FunKidsMain.openGame('space')" class="btn-3d btn-secondary w-full text-sm py-2.5">🎮 العب مغامرة الفضاء</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- الجزر الأربعة الافتراضية -->
+      <div class="space-y-3.5">
+        <div>
+          <h2 class="text-xl sm:text-3xl font-black text-slate-900">🏝️ عوالم وجزر الألعاب الافتراضية الأربعة</h2>
+          <p class="text-xs sm:text-sm font-bold text-slate-700">انقر على أي جزيرة لاستكشاف تخصصها العلمي والإبداعي:</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div onclick="window.FunKidsMain.openIsland('math')"
+            class="island-card bg-gradient-to-b from-rose-500 to-orange-500 text-white p-5 shadow-xl flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between"><span class="text-4xl">🏰</span><span class="px-3 py-1 rounded-full bg-white/25 font-black text-xs">عالم الحساب</span></div>
+              <h3 class="text-xl font-black">جزيرة الأرقام</h3>
+              <p class="text-xs font-bold text-rose-50">مغامرة الأرقام، سباق الأبطال التوربيني، بطولة كرة القدم، وتحدي السهام.</p>
+            </div>
+            <button type="button" class="btn-3d btn-accent w-full text-xs py-2">استكشف جزيرة الأرقام ⬅️</button>
+          </div>
+
+          <div onclick="window.FunKidsMain.openIsland('knowledge')"
+            class="island-card bg-gradient-to-b from-emerald-500 to-teal-600 text-white p-5 shadow-xl flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between"><span class="text-4xl">🌿</span><span class="px-3 py-1 rounded-full bg-white/25 font-black text-xs">عالم العلوم</span></div>
+              <h3 class="text-xl font-black">جزيرة المعرفة</h3>
+              <p class="text-xs font-bold text-emerald-50">خمّن الحيوان، مغامرة الفضاء، منقب الديناصورات، عيادة الأليفة، وحديقة الفراشات.</p>
+            </div>
+            <button type="button" class="btn-3d btn-accent w-full text-xs py-2">استكشف جزيرة المعرفة ⬅️</button>
+          </div>
+
+          <div onclick="window.FunKidsMain.openIsland('brain')"
+            class="island-card bg-gradient-to-b from-purple-600 to-indigo-700 text-white p-5 shadow-xl flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between"><span class="text-4xl">💎</span><span class="px-3 py-1 rounded-full bg-white/25 font-black text-xs">عالم التفكير</span></div>
+              <h3 class="text-xl font-black">جزيرة الذكاء</h3>
+              <p class="text-xs font-bold text-purple-100">تحدي الذاكرة، تركيب البازل، ومختبر الروبوتات والمدافع الفضائي.</p>
+            </div>
+            <button type="button" class="btn-3d btn-accent w-full text-xs py-2">استكشف جزيرة الذكاء ⬅️</button>
+          </div>
+
+          <div onclick="window.FunKidsMain.openIsland('creative')"
+            class="island-card bg-gradient-to-b from-pink-500 to-rose-500 text-white p-5 shadow-xl flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between"><span class="text-4xl">🎨</span><span class="px-3 py-1 rounded-full bg-white/25 font-black text-xs">عالم الفنون</span></div>
+              <h3 class="text-xl font-black">جزيرة الإبداع</h3>
+              <p class="text-xs font-bold text-pink-50">المرسم الحر، بوتيك الأميرات، مخبز الحلويات، واستوديو المجوهرات الملكية.</p>
+            </div>
+            <button type="button" class="btn-3d btn-accent w-full text-xs py-2">استكشف جزيرة الإبداع ⬅️</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 2: مكتبة الألعاب الشاملة (16 لعبة)
+         ==================================================================== -->
+    <section id="page-library" class="page-section hidden space-y-5">
+      <div class="card-3d p-4 sm:p-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">🎮 مكتبة الألعاب التفاعلية (16 لعبة)</h2>
+            <p class="text-xs sm:text-sm font-bold text-slate-600">تصفح الألعاب الـ 16 مصنفة إلى 6 ألعاب مشتركة، 5 ألعاب أولاد، و 5 ألعاب بنات:</p>
+          </div>
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+            <button type="button" data-island="all" onclick="window.FunKidsMain.openIsland('all')" class="island-filter-pill btn-3d btn-accent text-xs py-2 px-3 col-span-2 sm:col-span-1">🌍 كل الألعاب (16)</button>
+            <button type="button" data-island="shared" onclick="window.FunKidsMain.openIsland('shared')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">🌟 ألعاب مشتركة (6)</button>
+            <button type="button" data-island="boys" onclick="window.FunKidsMain.openIsland('boys')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">👦 ألعاب الأولاد (5)</button>
+            <button type="button" data-island="girls" onclick="window.FunKidsMain.openIsland('girls')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">👧 ألعاب البنات (5)</button>
+            <button type="button" data-island="math" onclick="window.FunKidsMain.openIsland('math')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">🏰 الأرقام</button>
+            <button type="button" data-island="knowledge" onclick="window.FunKidsMain.openIsland('knowledge')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">🌿 المعرفة</button>
+            <button type="button" data-island="brain" onclick="window.FunKidsMain.openIsland('brain')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">💎 الذكاء</button>
+            <button type="button" data-island="creative" onclick="window.FunKidsMain.openIsland('creative')" class="island-filter-pill btn-3d btn-secondary text-xs py-2 px-3">🎨 الإبداع</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="library-games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 3: الفئات العمرية
+         ==================================================================== -->
+    <section id="page-categories" class="page-section hidden space-y-5">
+      <div class="card-3d p-5 sm:p-6 space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">👶 تقسيم الألعاب حسب العمر</h2>
+        <p class="text-xs sm:text-sm font-bold text-slate-600">
+          صُمم عالم فن كيدز ليواكب نمو الطفل المعرفي والحركي عبر 3 مراحل عمرية مخصصة. اختر الفئة المناسبة لتتكيف الألعاب الـ 16 فوراً:
+        </p>
+      </div>
+
+      <div id="age-zones-mount" class="grid grid-cols-1 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 4: ساحة تشغيل اللعبة الفردية التفاعلية (16 لعبة)
+         ==================================================================== -->
+    <section id="page-game-view" class="page-section hidden space-y-4">
+      <div class="card-3d p-4 sm:p-5 bg-white flex flex-col gap-3.5">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-3 text-center sm:text-right">
+            <div id="active-game-icon" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-3xl sm:text-4xl shadow shrink-0">
+              🧮
+            </div>
+            <div>
+              <h2 id="active-game-title" class="text-xl sm:text-2xl font-black text-slate-900">مغامرة الأرقام والحساب</h2>
+              <p id="active-game-subtitle" class="text-xs font-bold text-slate-600">جزيرة الأرقام</p>
+            </div>
+          </div>
+          <button type="button" onclick="window.FunKidsMain.navigate('library')" class="btn-3d btn-primary text-xs py-2 px-4 w-full sm:w-auto shrink-0">🔙 العودة إلى مكتبة الألعاب (16)</button>
+        </div>
+
+        <!-- شريط التبديل السريع بين الألعاب الـ 16 مقسم بوضوح -->
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-black text-slate-500 ml-1">🌟 مشتركة (6):</span>
+            <button type="button" onclick="window.FunKidsMain.openGame('math')" class="btn-3d btn-secondary quick-game-pill">🧮 الأرقام</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('memory')" class="btn-3d btn-secondary quick-game-pill">🧠 الذاكرة</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('animals')" class="btn-3d btn-secondary quick-game-pill">🦁 الحيوانات</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('puzzle')" class="btn-3d btn-secondary quick-game-pill">🧩 البازل</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('drawing')" class="btn-3d btn-secondary quick-game-pill">🎨 المرسم</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('space')" class="btn-3d btn-secondary quick-game-pill">🚀 الفضاء</button>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-black text-sky-700 ml-1">👦 أولاد (5):</span>
+            <button type="button" onclick="window.FunKidsMain.openGame('racer')" class="btn-3d btn-accent quick-game-pill">🏎️ سباق الأبطال</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('robo')" class="btn-3d btn-accent quick-game-pill">🤖 الروبوتات</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('soccer')" class="btn-3d btn-accent quick-game-pill">⚽ كرة القدم</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('dino')" class="btn-3d btn-accent quick-game-pill">🦖 الديناصورات</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('archery')" class="btn-3d btn-accent quick-game-pill">🏹 السهام</button>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-black text-pink-700 ml-1">👧 بنات (5):</span>
+            <button type="button" onclick="window.FunKidsMain.openGame('fashion')" class="btn-3d btn-primary quick-game-pill">👗 بوتيك الأزياء</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('bakery')" class="btn-3d btn-primary quick-game-pill">🧁 شيف الحلويات</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('jewelry')" class="btn-3d btn-primary quick-game-pill">💎 المجوهرات</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('petcare')" class="btn-3d btn-primary quick-game-pill">🐱 رعاية الأليفة</button>
+            <button type="button" onclick="window.FunKidsMain.openGame('garden')" class="btn-3d btn-primary quick-game-pill">🌸 حديقة الزهور</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- حاويات تشغيل الألعاب الـ 16 -->
+      <div class="card-3d p-4 sm:p-6 bg-white/95">
+        <div id="math-game-mount"></div>
+        <div id="memory-game-mount" class="hidden"></div>
+        <div id="animals-game-mount" class="hidden"></div>
+        <div id="puzzle-game-mount" class="hidden"></div>
+        <div id="drawing-game-mount" class="hidden"></div>
+        <div id="space-game-mount" class="hidden"></div>
+
+        <div id="racer-game-mount" class="hidden"></div>
+        <div id="robo-game-mount" class="hidden"></div>
+        <div id="soccer-game-mount" class="hidden"></div>
+        <div id="dino-game-mount" class="hidden"></div>
+        <div id="archery-game-mount" class="hidden"></div>
+
+        <div id="fashion-game-mount" class="hidden"></div>
+        <div id="bakery-game-mount" class="hidden"></div>
+        <div id="jewelry-game-mount" class="hidden"></div>
+        <div id="petcare-game-mount" class="hidden"></div>
+        <div id="garden-game-mount" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 5: صفحة الإنجازات والشارات والجوائز
+         ==================================================================== -->
+    <section id="page-achievements" class="page-section hidden space-y-5">
+      <div class="card-3d p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900">🏅 لوحة الإنجازات والشارات الملكية</h2>
+          <p class="text-xs sm:text-sm font-bold text-slate-600">أكمل التحديات في الألعاب المشتركة وألعاب الأولاد والبنات لفتح جميع الشارات الذهبية:</p>
+        </div>
+        <div class="px-4 py-2.5 rounded-2xl bg-amber-100 border-2 border-amber-300 font-black text-amber-900 text-sm">
+          الشارات المكتسبة: <span class="ui-badges-count">1 / 10</span> 🏆
+        </div>
+      </div>
+
+      <div id="achievements-grid-mount" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 6: صفحة تقدم الطفل والإحصائيات
+         ==================================================================== -->
+    <section id="page-progress" class="page-section hidden space-y-5">
+      <div class="card-3d p-5 sm:p-6 space-y-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+          <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">📊 تقرير تقدم الطفل الشامل (16 لعبة)</h2>
+            <p class="text-xs sm:text-sm font-bold text-slate-600">متابعة تفصيلية للنقاط والنجوم والمستوى وجميع الألعاب الـ 16 التي تم إتقانها:</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3.5 py-2 rounded-2xl bg-emerald-100 text-emerald-900 font-black text-xs sm:text-sm">المستوى الحالي: <span class="ui-level">2</span></span>
+            <span class="px-3.5 py-2 rounded-2xl bg-rose-100 text-rose-900 font-black text-xs sm:text-sm">النقاط: <span class="ui-points">150</span> 💎</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+          <div class="lg:col-span-7 space-y-3">
+            <h3 class="text-base sm:text-lg font-black text-slate-800">🎯 إتقان الألعاب الـ 16 وأعلى النتائج:</h3>
+            <div id="progress-stats-mount" class="space-y-3"></div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-3">
+            <h3 class="text-base sm:text-lg font-black text-slate-800">🕒 سجل النشاط والمكافآت الأخيرة:</h3>
+            <div id="progress-log-mount" class="space-y-2.5"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 7: صفحة الإعدادات والتحكم بالصوت والحركة
+         ==================================================================== -->
+    <section id="page-settings" class="page-section hidden space-y-5">
+      <div class="card-3d p-5 sm:p-6 space-y-4">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900">⚙️ إعدادات المنصة والتحكم</h2>
+          <p class="text-xs sm:text-sm font-bold text-slate-600">تحكم كامل في المؤثرات الصوتية الواقعية، نطق الشخصية، الحركات، وحفظ التقدم المحلي:</p>
+        </div>
+        <div id="settings-controls-mount"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         الصفحة 8: من نحن ومعايير أمان الأطفال
+         ==================================================================== -->
+    <section id="page-about" class="page-section hidden space-y-5">
+      <div class="card-3d p-5 sm:p-8 space-y-5">
+        <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-right">
+          <img src="assets/characters/max-avatar.jpg" alt="المرشد ماكس" class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl border-4 border-amber-400 shadow-xl object-cover" />
+          <div class="space-y-2">
+            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-black text-xs">منصة عربية تعليمية آمنة 100%</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">حول منصة عالم فن كيدز</h2>
+            <p class="text-xs sm:text-base font-bold text-slate-600 leading-relaxed">
+              منصة ألعاب تعليمية وترفيهية حركية معربة بالكامل ومصممة للأطفال واليافعين من عمر 5 إلى 15 سنة، تضم 16 لعبة تفاعلية واقعية (6 ألعاب تعليمية مشتركة، 5 ألعاب حركية للأولاد، و5 ألعاب إبداعية للبنات) بصحبة المرشد الكرتوني التفاعلي <strong>ماكس</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- التذييل مع اسم حليمه فهمي الحارثي في أسفل الموقع -->
+  <footer class="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 pt-4 pb-8 text-center">
+    <div class="card-3d p-5 bg-gradient-to-r from-white via-amber-50 to-white space-y-3">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-bold text-slate-600 border-b border-slate-200/80 pb-3">
+        <div>🌟 <strong>عالم فن كيدز</strong> – 16 لعبة تعليمية وحركية تفاعلية (6 مشتركة • 5 أولاد • 5 بنات)</div>
+        <div>متوافق مع جميع شاشات الجوال والأجهزة اللوحية • حفظ التقدم محلياً</div>
+      </div>
+      <div class="pt-1">
+        <span class="inline-block px-6 py-2 rounded-full bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-300 border-2 border-amber-400 text-slate-900 font-black text-base sm:text-lg shadow-sm">
+          حليمه فهمي الحارثي
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ملفات الجافاسكريبت المقسمة والمنظمة -->
+  <script src="js/storage.js"></script>
+  <script src="js/rewards.js"></script>
+  <script src="js/character.js"></script>
+  <script src="js/math-game.js"></script>
+  <script src="js/memory-game.js"></script>
+  <script src="js/puzzle-game.js"></script>
+  <script src="js/drawing-game.js"></script>
+  <script src="js/space-game.js"></script>
+  <script src="js/boys-games.js"></script>
+  <script src="js/girls-games.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
